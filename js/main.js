@@ -141,6 +141,12 @@ function cellClicked(elCell, i, j) {
     if (cell.isMine){
         LIFE.pop()
         elLives.innerHTML = LIFE
+        var imojeGame = document.querySelector('.middelDiv')
+        imojeGame.innerHTML = WORING
+        if(LIFE.length===0){
+            imojeGame.innerHTML = DIY
+            elLives.innerHTML = 'GAME OVER'
+        } 
     }else {        
         gScore++
         elScore.innerText = 'Score: ' + gScore
