@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+    <title>Sprint 1 - Fares Mulla</title>
+</head>
+
+<body onload="init()">
+    <h1 class="header">Minesweeper Game</h1>
+    <div class="boxGame">
+        <div class="boxTopGame">
+            <div class="sideDiv scoreDiv">Score: 0</div>
+            <div class="middelDiv" onclick="init(), createBoard()"></div>
+            <div class="sideDiv timeDiv">Time</div>
+        </div>
+
+        <div class="boxMidGame">
+            <div class="infoDiv lives"></div>            
+            <div onclick="helpPlayer()" class="infoDiv lamps"></div>
+        </div>
+
+        <div class="boxMidGame">
+            <div onclick="resetLL(), init(), createBoard(4,2)" class="levelGame">Easy</div>
+            <div onclick="resetLL(), init(), createBoard(8,12)" class="levelGame">Hard</div>
+            <div onclick="resetLL(), init(), createBoard(12,30)" class="levelGame">Extreme</div>
+        </div>
+
+        <div class="boxTableGame">
+            <div class="boxTable">
+            <table class="tableGame">
+
+            </table>
+        </div>
+        </div>
+    </div>
+
+
+    <footer class="footer">&copy; By Fares Mulla 2022</footer>
+    <script src="js/main.js"></script>
+    <script src="js/utils.js"></script>
+</body>
+
+</html>
