@@ -116,7 +116,7 @@ function renderBoard(gBoard) {
         strHTML += `</tr>\n`
         // console.log('strHTML ', strHTML);
     }
-    //TODO
+    
     var elTd = document.querySelector('.cell')
     if (cell.isMine) elTd.innerHTML = MINE
     if (cell.isMarked) elTd.innerHTML = `<img src='img/selected.png' class'tdImg' />`
@@ -153,6 +153,7 @@ function cellClicked(elCell, i, j) {
         if(LIFE.length===0){
             imojeGame.innerHTML = DIY
             elLives.innerHTML = 'GAME OVER'
+            clearInterval(ginterval)
             
         } 
     }else {        
