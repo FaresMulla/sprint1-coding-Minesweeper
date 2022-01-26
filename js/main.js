@@ -13,7 +13,11 @@ function init() {
     var lamps = document.querySelector('.lamps')
     lamps.innerHTML = LAMP
 
+    var elScore = document.querySelector('.scoreDiv')
+    elScore.innerHTML = 'Score: ' + gScore
+
     resetLL()
+    
 }
 
 var ginterval;
@@ -32,6 +36,7 @@ var LAMP = ['💡', '💡', '💡']
 function resetLL() {
     LIFE = ['💚', '💚', '💚']
     LAMP = ['💡', '💡', '💡']
+    gScore = 0
 }
 
 var gBoard = []
@@ -102,6 +107,7 @@ function renderBoard(gBoard) {
 
             strHTML += `\t<td class="cell imgCoverH" 
             onclick="cellClicked(this, ${i}, ${j})"
+            oncontextmenu = "cellClickedR(this, ${i}, ${j})"
             title="${boardCell}" > ${cellInner}
             </td>\n`
 
@@ -135,6 +141,7 @@ function content(pos, i, j){
 }
 
 function cellClicked(elCell, i, j) {
+    if (LIFE.length===0)return
     var cell = gBoard[i][j]
     var elLives = document.querySelector('.lives')
     var elScore = document.querySelector('.scoreDiv')
@@ -146,14 +153,20 @@ function cellClicked(elCell, i, j) {
         if(LIFE.length===0){
             imojeGame.innerHTML = DIY
             elLives.innerHTML = 'GAME OVER'
+            
         } 
     }else {        
         gScore++
         elScore.innerText = 'Score: ' + gScore
     }
-    
+}
 
 
+function cellClickedR(elCell, i, j){
+    if (LIFE.length===0)return
+    var cell = gBoard[i][j]
+    cell.isMarked = true
+    elCell.innerHTML = MARK
 }
 
 function unSelectSeat() {
