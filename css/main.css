@@ -69,8 +69,7 @@ body{
     margin: 3px;
 }
 
-.infoDiv{
-    width: 47%;
+.infoDiv{    
     text-align: center;
     font-size: 25pt;
 }
@@ -120,6 +119,8 @@ body{
     
 }
 
-.imgCoverH{
-    image: url(../img/hidden.png);
+
+
+.isSafty{
+    border: 5px solid black;
 }
