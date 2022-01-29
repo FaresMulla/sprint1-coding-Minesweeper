@@ -19,6 +19,15 @@ function init() {
     var elScore = document.querySelector('.scoreDiv')
     elScore.innerHTML = 'Score: ' + gScore
 
+    var elWinner = document.querySelector('.winner')
+
+    if (localStorage.length>0) {
+        var theWinnerC = JSON.parse(localStorage.getItem('winnerGame'))
+        
+        elWinner.innerHTML = `Our Winner: ${theWinnerC.name}, with max score: ${theWinnerC.score}`
+    }
+
+
     resetLL()
 
 }
@@ -26,6 +35,8 @@ function init() {
 var ginterval;
 var gElSelectedCell = null;
 var gScore = 0
+var gShowCells = 0
+var gApeerCells = []
 
 var MINE = '🎇'
 var MARK = '🚩'
@@ -113,9 +124,9 @@ function renderBoard(gBoard) {
             var boardCell = 'Cell ' + (i) + ',' + (j)
             if (cell.isChecked) {
                 var cellInner = SAFTY
-            }else if(!cell.isShown){
+            } else if (!cell.isShown) {
                 cellInner = `<img src='img/hidden.png' class'tdImg' />`
-            }else {
+            } else {
                 cellInner = content(cell, i, j)
             }
             var mac = content(cell, i, j)
@@ -134,10 +145,13 @@ function renderBoard(gBoard) {
         strHTML += `</tr>\n`
         // console.log('strHTML ', strHTML);
     }
+    // fixed proplem in the consol!
+    setTimeout(() => {
+        var elTd = document.querySelector('.cell')
+        if (cell.isMine) elTd.innerHTML = MINE
+        if (cell.isMarked) elTd.innerHTML = `<img src='img/selected.png' class'tdImg' />`
+    }, 1500)
 
-    var elTd = document.querySelector('.cell')
-    if (cell.isMine) elTd.innerHTML = MINE
-    if (cell.isMarked) elTd.innerHTML = `<img src='img/selected.png' class'tdImg' />`
 
     // console.log(strHTML)
 
@@ -161,12 +175,23 @@ function content(pos, i, j) {
 }
 
 function cellClicked(elCell, i, j) {
+    if (gShowCells === 1) {
+        showCells(i, j)
+        return
+    }
     var myPos = { i: i, j: j }
     if (LIFE.length === 0) return
     var cell = gBoard[i][j]
-    if (cell.minesAroundCount === 0 && !cell.isMine) cellsAroundSafty(myPos)
+    if (cell.minesAroundCount === 0 && !cell.isMine && !cell.isShown) cellsAroundSafty(myPos)
+    if (cell.isMarked) {
+        cell.isMarked = false
+        renderBoard(gBoard)
+        return
+    }
+    if (cell.isChecked) cell.isChecked = false
+    if (cell.isShown) return
+
     cell.isShown = true
-    if (cell.isChecked) cell.isChecked=false
     content(cell, i, j)
     renderBoard(gBoard)
     var elScore = document.querySelector('.scoreDiv')
@@ -195,29 +220,56 @@ function cellClickedR(elCell, i, j) {
 
 }
 
-function checkWinner(){    
+function checkWinner() {
     var counter = 0
     var counterWinner = 0
-    for (var i=0; i<(gBoard.length); i++){
-        for(var j=0; j<gBoard[0].length; j++){
+    var ourWinner = ''
+
+    for (var i = 0; i < (gBoard.length); i++) {
+        for (var j = 0; j < gBoard[0].length; j++) {
             counter++
             var cell = gBoard[i][j]
-            if(cell.isShown){
+            if (cell.isShown) {
                 counterWinner++
             }
-            if(cell.isMine&&cell.isShown){
+            if (cell.isMine && cell.isShown) {
                 counterWinner++
             }
-            if(cell.isMarked&&cell.isMine){
+            if (cell.isMarked && cell.isMine) {
                 counterWinner++
             }
-        }        
+        }
     }
-    if (counterWinner>=counter){
+    if (counterWinner >= counter) {
         clearInterval(ginterval)
         var imojeGame = document.querySelector('.middelDiv')
-        imojeGame.innerHTML = 'You are our winner!!'
+        imojeGame.innerHTML = 'You are winner!!'
+        var theWinnerC;            
+        var elModal = document.querySelector('.modal')
+        var elModalMsg = document.querySelector('.modal h3')
+        var elWinner = document.querySelector('.winner')
+
+        var theWinnerC = JSON.parse(localStorage.getItem('winnerGame'))
+        if(!localStorage.length>0){
+            ourWinner = prompt('You Are Our Winner, What is your name?')
+            var localData = { name: ourWinner, score: gScore }
+            localStorage.setItem('winnerGame', JSON.stringify(localData))
+        }else if (counterWinner > theWinnerC.score) {
+            ourWinner = prompt('You Are Our Winner, What is your name?')
+            var localData = { name: ourWinner, score: gScore }
+            localStorage.setItem('winnerGame', JSON.stringify(localData))
+            if (localStorage.length>0) {
+                theWinnerC = JSON.parse(localStorage.getItem('winnerGame')) 
+                elWinner.innerHTML = `Our Winner: ${theWinnerC.name}, with max score: ${theWinnerC.score}`
+            }
+            elModal.style.display = 'block'
+            elModalMsg.innerHTML = 'You Won and the GAME is OVER'
+            setTimeout(()=>{elModal.style.display = 'none'},5000)
+        }
+
+
     }
+
 }
 
 
@@ -243,19 +295,28 @@ function minesAroundCountFun(pos) {
     return count
 }
 
-function cellsAroundSafty(pos) {
+function cellsAroundSafty(pos, x) {
     var count = 0
+    gApeerCells = []
     for (var i = pos.i - 1; i <= pos.i + 1; i++) {
         if (i < 0 || i >= gBoard.length) continue;
         for (var j = pos.j - 1; j <= pos.j + 1; j++) {
             if (j < 0 || j >= gBoard[0].length) continue;
-            if (pos.i === i && pos.j === j) continue;
+            if (x !== 1) {
+                if (pos.i === i && pos.j === j) continue;
+            }
             var cell = gBoard[i][j]
+            if (gShowCells === 1 && !cell.isShown) {
+                gApeerCells.push(cell)
+            }
             cell.isShown = true
             count++
+
+
         }
+
 
     }
     if (count > 0) renderBoard(gBoard)
-    //return count
+    if (gApeerCells.length > 0) return gApeerCells
 }
